@@ -12,11 +12,20 @@ def drawOne(draw: ImageDraw, size):
     headEndX = baseStartX - rd.randint(0,3)
     headEndY = baseStartY + rd.randint(-3, 3)
 
+    # Get the coordinates for the little tail at the end of the one
+    tailStartX = baseEndX - rd.randint(0,3)
+    tailStartY = baseEndY + rd.randint(-3,3)
+    tailEndX = baseEndX + rd.randint(0,3)
+    tailEndY =  baseEndY + rd.randint(-3,3)
+
     # Draw the base one line
     draw.line(((baseStartX, baseStartY), (baseEndX, baseEndY)), width=1)
 
     # Draw the head of the one
     draw.line(((baseStartX, baseStartY), (headEndX, headEndY)), width = 1)
+
+    # Draw the tail of the one
+    draw.line(((tailStartX, tailStartY), (tailEndX, tailEndY)), width = 1)
 
 
 def main():
