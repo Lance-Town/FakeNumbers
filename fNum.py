@@ -4,14 +4,22 @@ import random as rd
 
 def drawOne(draw: ImageDraw, image: Image, size):
     # Get the start and end points of the base of the one
-    baseStartX = int(size[0]/2) + rd.randint(-3,3)
+    baseStartX = int(size[0]/2) + rd.randint(-2,1)
     baseStartY = rd.randint(3,10)
-    baseEndX = int(size[0]/2) + rd.randint(-3,3)
+    baseEndX = int(size[0]/2) + rd.randint(-2,1)
     baseEndY = size[1] - rd.randint(0,10)
 
     # Get the coordinates for the little head at the top of the one
-    headEndX = baseStartX - rd.randint(1,3)
-    headEndY = baseStartY + rd.randint(-1, 3)
+    pointY = rd.randint(-1, 3)
+    if pointY == -1:
+        headEndX = baseStartX - rd.randint(1,2)
+    elif pointY == 3:
+        headEndX = baseStartX - rd.randint(2,3)
+    else:
+        headEndX = baseStartX - rd.randint(1,3)
+
+    headEndY = baseStartY + pointY
+        
 
     # Get the coordinates for the little tail at the end of the one
     pointX = rd.randint(1,3)
