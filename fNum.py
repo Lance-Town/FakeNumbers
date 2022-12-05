@@ -22,12 +22,16 @@ def drawOne(draw: ImageDraw, image: Image, size):
         
 
     # Get the coordinates for the little tail at the end of the one
-    pointX = rd.randint(1,3)
-    pointY = rd.randint(1,3)
+    pointY = rd.randint(-3,3)
+    if pointY > 1 or pointY < -1:
+        pointX = rd.randint(2,3)
+    else:
+        pointX = rd.randint(1,3)
     tailStartX = baseEndX - pointX
-    tailStartY = baseEndY - pointY
+    tailStartY = baseEndY + pointY
+
     tailEndX = baseEndX + pointX
-    tailEndY =  baseEndY + pointY
+    tailEndY =  baseEndY - pointY
 
     # Draw the faintest third line that surrounds the base and head
     grayOne = rd.randint(10,33)
@@ -63,7 +67,7 @@ def drawOne(draw: ImageDraw, image: Image, size):
 def main():
     # The format and size of the file
     FORMAT = 'RGBA'
-    SIZE = (28,28)
+    SIZE = (15,30)
 
     # create a new image
     image = Image.new(FORMAT, SIZE, (0,0,0,255))
