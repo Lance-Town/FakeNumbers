@@ -1,8 +1,13 @@
 from PIL import Image, ImageDraw
 import numpy as np
 import random as rd
+import customLine as cl
+import math
 
-def drawOne(draw: ImageDraw, image: Image, size):
+#TODO Make the line drawing antialiased or something to make to look like a real pencil line
+
+# This is a custom line that will be able to draw a line with each pixel being a different color
+def testLine(draw: ImageDraw, image: Image, size):
     # Get the start and end points of the base of the one
     baseStartX = int(size[0]/2) + rd.randint(-2,1)
     baseStartY = rd.randint(3,10)
@@ -19,7 +24,6 @@ def drawOne(draw: ImageDraw, image: Image, size):
         headEndX = baseStartX - rd.randint(1,3)
 
     headEndY = baseStartY + pointY
-        
 
     # Get the coordinates for the little tail at the end of the one
     pointY = rd.randint(-3,3)
@@ -33,49 +37,30 @@ def drawOne(draw: ImageDraw, image: Image, size):
     tailEndX = baseEndX + pointX
     tailEndY =  baseEndY - pointY
 
-    # Draw the faintest third line that surrounds the base and head
-    grayOne = rd.randint(10,33)
-    grayTwo = rd.randint(10,33)
-    draw.line(((headEndX+2, headEndY+2), (baseStartX+2, baseStartY), (baseEndX+2, baseEndY)), fill=(grayOne,grayOne,grayOne,rd.randint(240,255)), width=1)
-    draw.line(((headEndX+2, headEndY-2), (baseStartX-2, baseStartY), (baseEndX-2, baseEndY)), fill=(grayTwo,grayTwo,grayTwo,rd.randint(240,255)), width=1)
-    
-    # Draw the faintest third line that surrounds the tail
-    grayOne = rd.randint(10,33)
-    grayTwo = rd.randint(10,33)
-    draw.line(((tailStartX+2, tailStartY), (tailEndX+2, tailEndY)), fill=(grayOne,grayOne,grayOne,rd.randint(100,200)), width = 1)
-    draw.line(((tailStartX-2, tailStartY), (tailEndX-2, tailEndY+1)), fill=(grayTwo,grayTwo,grayTwo,rd.randint(100,200)), width = 1)
 
-    # Draw the faint second line that surrounds the base and head
-    grayOne = rd.randint(55,99)
-    grayTwo = rd.randint(55,99)
-    draw.line(((headEndX+1, headEndY+1), (baseStartX+1, baseStartY), (baseEndX+1, baseEndY)), fill=(grayOne,grayOne,grayOne,rd.randint(100,200)), width=1)
-    draw.line(((headEndX+1, headEndY-1), (baseStartX-1, baseStartY), (baseEndX-1, baseEndY)), fill=(grayTwo,grayTwo,grayTwo,rd.randint(100,200)), width=1)
+    # Not super sure but this all just doesn't work
+    # draw the first base line
+    cl.drawLine(draw=draw, coordOne=(baseStartY, baseStartX), coordTwo=(baseEndY, baseEndX))
 
-    # Draw the faint second line that surrounds the tail
-    grayOne = rd.randint(55,99)
-    grayTwo = rd.randint(55,99)
-    draw.line(((tailStartX+1, tailStartY), (tailEndX+1, tailEndY)), fill=(grayOne,grayOne,grayOne,rd.randint(100,200)), width = 1)
-    draw.line(((tailStartX-1, tailStartY), (tailEndX-1, tailEndY)), fill=(grayTwo,grayTwo,grayTwo,rd.randint(100,200)), width = 1)
+    # draw the first head line
 
-    # Draw the base one line
-    draw.line(((headEndX, headEndY), (baseStartX, baseStartY), (baseEndX, baseEndY)), fill=(255,255,255,255), width=1)
-
-    # Draw the tail of the one
-    draw.line(((tailStartX, tailStartY), (tailEndX, tailEndY)), fill=(255,255,255,255), width = 1)
-
+    # draw the first tail line
+    cl.drawLine(draw=draw, coordOne=(tailStartX, tailStartY), coordTwo=(tailEndX, tailEndY))
 
 def main():
     # The format and size of the file
-    FORMAT = 'RGBA'
-    SIZE = (15,30)
+    FORMAT = 'RGB'
+    SIZE = (15,40)
+    BACKGROUND = (250 + rd.randint(-5,5), 250 + rd.randint(-5,5), 250 + rd.randint(-5,5))
 
     # create a new image
-    image = Image.new(FORMAT, SIZE, (0,0,0,255))
+    image = Image.new(FORMAT, SIZE, BACKGROUND)
 
     # Draw on the new image
     draw = ImageDraw.Draw(image)
 
-    drawOne(draw,image, image.size)
+    cl.drawOne(draw,image, image.size)
+
     image.show()
 
 
