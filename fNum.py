@@ -1,13 +1,11 @@
 import customLineClass as custom
 
-#TODO Make the line drawing antialiased or something to make to look like a real pencil line
-
 def main():
     # create a new image
     image = custom.CImage()
 
     # Draw on the new image
-    image.drawOne()
+    image.bezier((2,2), (15,0), (13,30))
 
     image.show()
 
