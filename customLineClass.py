@@ -1,5 +1,7 @@
 from PIL import Image, ImageDraw
 import random as rd
+import numpy as np
+from scipy.interpolate import BPoly
 import math
 
 # Custom class to hold the image
@@ -29,6 +31,7 @@ class CImage:
 
         # Get distance between points
         dxy = math.sqrt((dx**2 + dy**2))
+
         # difference to be added to x and y at each interval
         dx /= dxy
         dy /= dxy
@@ -96,4 +99,16 @@ class CImage:
     
     def show(self):
         self.image.show()
-        
+    
+    # still testing for cubic bezier
+    def bezier(self, coordOne, coordTwo, coordThree):
+        cp = np.array([coordOne, coordTwo, coordThree])
+        curve = BPoly(cp[:, None, :], [0, 1])
+
+        x = np.linspace(0, 1, 50)
+
+        points = curve(x)
+
+        for point in points:
+            #FIXME make it so the curve's fill is gray scale and changed
+            self.draw.point((point[0], point[1]), fill=(255,0,255))
