@@ -4,7 +4,7 @@ import customLineClass as custom
 
 def main():
     # create a new image
-    image = custom.cImage()
+    image = custom.CImage()
 
     # Draw on the new image
     image.drawOne()
