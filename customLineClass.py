@@ -3,10 +3,10 @@ import random as rd
 import math
 
 # Custom class to hold the image
-class cImage: 
+class CImage: 
     # Format, size and background of file
     FORMAT = 'RGB'
-    SIZE = (15,30)
+    SIZE = (15,40)
     BACKGROUND = (250 + rd.randint(-5,5), 250 + rd.randint(-5,5), 250 + rd.randint(-5,5))
 
     image = Image.new(FORMAT, SIZE, BACKGROUND)
@@ -15,11 +15,9 @@ class cImage:
     def __init__(self) -> Image:
         pass
     
-    def drawLine(self, coordOne, coordTwo):
-        x0 = coordOne[0]
-        y0 = coordOne[1]
-        x1 = coordTwo[0]
-        y1 = coordTwo[1]
+    def drawLine(self, coordOne, coordTwo, color):
+        x0, y0 = coordOne
+        x1, y1 = coordTwo
 
         # Set x and y to starting positions
         y = y0
@@ -31,14 +29,14 @@ class cImage:
 
         # Get distance between points
         dxy = math.sqrt((dx**2 + dy**2))
-
         # difference to be added to x and y at each interval
         dx /= dxy
         dy /= dxy
 
         # loop through line and plot points
         for _ in range(int(dxy)):
-            self.draw.point((round(x),round(y)), (0, 0, 0))
+            pxlColor = color + rd.randint(-10,10)
+            self.draw.point((round(x),round(y)), fill=(pxlColor, pxlColor, pxlColor))
             x += dx
             y += dy
 
@@ -52,33 +50,49 @@ class cImage:
         # Get the coordinates for the little head at the top of the one
         pointY = rd.randint(-1, 3)
         if pointY == -1:
-            headEndX = baseStartX - rd.randint(1,2)
+            headEndX = baseStartX - rd.randint(2,4)
         elif pointY == 3:
-            headEndX = baseStartX - rd.randint(2,3)
+            headEndX = baseStartX - rd.randint(3,5)
         else:
-            headEndX = baseStartX - rd.randint(1,3)
+            headEndX = baseStartX - rd.randint(2,5)
 
         headEndY = baseStartY + pointY
 
         # Get the coordinates for the little tail at the end of the one
         pointY = rd.randint(-3,3)
         if pointY > 1 or pointY < -1:
-            pointX = rd.randint(2,3)
+            pointX = rd.randint(3,5)
         else:
-            pointX = rd.randint(1,3)
+            pointX = rd.randint(2,5)
         tailStartX = baseEndX - pointX
         tailStartY = baseEndY + pointY
 
         tailEndX = baseEndX + pointX
         tailEndY =  baseEndY - pointY
 
-        # Draw the base one line
-        self.drawLine(coordOne=(baseStartX, baseStartY), coordTwo=(baseEndX, baseEndY))
-        # draw the base tail
-        self.drawLine(coordOne=(tailStartX, tailStartY), coordTwo=(tailEndX, tailEndY))
+        # TESTING draw faint base lines
+        self.drawLine(coordOne=(baseStartX+2, baseStartY), coordTwo=(baseEndX+2, baseEndY), color=rd.randint(200,240))
+        self.drawLine(coordOne=(baseStartX-1, baseStartY), coordTwo=(baseEndX-1, baseEndY), color=rd.randint(200,240))
+
+        # TESTING draw faint tail lines
+        self.drawLine(coordOne=(tailStartX+2, tailStartY), coordTwo=(tailEndX+2, tailEndY), color=rd.randint(200,240))
+        self.drawLine(coordOne=(tailStartX-1, tailStartY), coordTwo=(tailEndX-1, tailEndY), color=rd.randint(200,240))
+
+        # TESTING draw faint head lines
+        self.drawLine(coordOne=(headEndX-1, headEndY), coordTwo=(baseStartX-1, baseStartY), color=rd.randint(200,240))
+        self.drawLine(coordOne=(headEndX+2, headEndY), coordTwo=(baseStartX+2, baseStartY), color=rd.randint(200,240))
 
         # draw base head
-        self.drawLine(coordOne=(headEndX, headEndY), coordTwo=(baseStartX, baseStartY))
+        self.drawLine(coordOne=(headEndX, headEndY), coordTwo=(baseStartX, baseStartY), color=rd.randint(120,150))
+        self.drawLine(coordOne=(headEndX+1, headEndY), coordTwo=(baseStartX+1, baseStartY), color=rd.randint(120,150))
+
+        # draw the base tail
+        self.drawLine(coordOne=(tailStartX, tailStartY), coordTwo=(tailEndX, tailEndY), color=rd.randint(120,150))
+        self.drawLine(coordOne=(tailStartX+1, tailStartY), coordTwo=(tailEndX+1, tailEndY), color=rd.randint(120,150))
+
+        # draw the base one line
+        self.drawLine(coordOne=(baseStartX, baseStartY), coordTwo=(baseEndX, baseEndY), color=rd.randint(120,150))
+        self.drawLine(coordOne=(baseStartX+1, baseStartY), coordTwo=(baseEndX+1, baseEndY), color=rd.randint(120,150))
     
     def show(self):
         self.image.show()
