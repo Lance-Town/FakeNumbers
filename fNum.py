@@ -5,7 +5,7 @@ def main():
     image = custom.CImage()
 
     # Draw on the new image
-    image.bezier((2,2), (15,0), (13,30))
+    image.drawTwo()
 
     image.show()
 

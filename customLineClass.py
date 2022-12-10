@@ -38,8 +38,8 @@ class CImage:
 
         # loop through line and plot points
         for _ in range(int(dxy)):
-            pxlColor = color + rd.randint(-10,10)
-            self.draw.point((round(x),round(y)), fill=(pxlColor, pxlColor, pxlColor))
+            pxlColorShift = color + rd.randint(-10,10)
+            self.draw.point((round(x),round(y)), fill=(pxlColorShift, pxlColorShift, pxlColorShift))
             x += dx
             y += dy
 
@@ -73,15 +73,15 @@ class CImage:
         tailEndX = baseEndX + pointX
         tailEndY =  baseEndY - pointY
 
-        # TESTING draw faint base lines
+        # draw faint base lines
         self.drawLine(coordOne=(baseStartX+2, baseStartY), coordTwo=(baseEndX+2, baseEndY), color=rd.randint(200,240))
         self.drawLine(coordOne=(baseStartX-1, baseStartY), coordTwo=(baseEndX-1, baseEndY), color=rd.randint(200,240))
 
-        # TESTING draw faint tail lines
+        # draw faint tail lines
         self.drawLine(coordOne=(tailStartX+2, tailStartY), coordTwo=(tailEndX+2, tailEndY), color=rd.randint(200,240))
         self.drawLine(coordOne=(tailStartX-1, tailStartY), coordTwo=(tailEndX-1, tailEndY), color=rd.randint(200,240))
 
-        # TESTING draw faint head lines
+        # draw faint head lines
         self.drawLine(coordOne=(headEndX-1, headEndY), coordTwo=(baseStartX-1, baseStartY), color=rd.randint(200,240))
         self.drawLine(coordOne=(headEndX+2, headEndY), coordTwo=(baseStartX+2, baseStartY), color=rd.randint(200,240))
 
@@ -96,19 +96,45 @@ class CImage:
         # draw the base one line
         self.drawLine(coordOne=(baseStartX, baseStartY), coordTwo=(baseEndX, baseEndY), color=rd.randint(120,150))
         self.drawLine(coordOne=(baseStartX+1, baseStartY), coordTwo=(baseEndX+1, baseEndY), color=rd.randint(120,150))
+
+    # draw the number two
+    def drawTwo(self):
+        # get points for base number two
+        # FIXME adjust the points to not allow the two to go off the image
+        startPoint = (rd.randint(1,5), rd.randint(1,3))
+        middlePointOne = (self.image.size[0] + rd.randint(5,10), rd.randint(-12, 5))
+        jointPoint = (rd.randint(2,7), self.image.size[1] - rd.randint(3,10))
+        lastPoint = (self.image.size[0] - rd.randint(1,5), self.image.size[1] - rd.randint(0,10))
+
+        # draw lines
+        self.bezier((startPoint, middlePointOne, jointPoint), 144, 2)
+        self.drawLine(coordOne=jointPoint, coordTwo=lastPoint, color=144)
+        self.drawLine(coordOne=(jointPoint[0]-1, jointPoint[1]), coordTwo=lastPoint, color=144)
     
     def show(self):
         self.image.show()
     
-    # still testing for cubic bezier
-    def bezier(self, coordOne, coordTwo, coordThree):
-        cp = np.array([coordOne, coordTwo, coordThree])
+    # still testing for bezier
+    def bezier(self, coords, color, width=1):
+        width = width if width>0 else 0
+
+        cp = np.array([tup for tup in coords])
         curve = BPoly(cp[:, None, :], [0, 1])
 
-        x = np.linspace(0, 1, 50)
+        # FIXME change it to use the minimum needed points on the line instead of arbitrary 100 points
+        x = np.linspace(0, 1, 100)
 
         points = curve(x)
 
-        for point in points:
-            #FIXME make it so the curve's fill is gray scale and changed
-            self.draw.point((point[0], point[1]), fill=(255,0,255))
+        # plot lines
+        for x, y in points:
+            pxlColorShift = color + rd.randint(-10,10)
+            faintColorShift = color + rd.randint(50,90)
+
+            for wid in range(width):
+                # base lines
+                self.draw.point((x-wid+1, y), fill=(pxlColorShift,pxlColorShift,pxlColorShift))
+                
+                # faint lines
+                self.draw.point((x-wid, y), fill=(faintColorShift, faintColorShift, faintColorShift))
+                self.draw.point((x+1, y), fill=(faintColorShift, faintColorShift, faintColorShift))
