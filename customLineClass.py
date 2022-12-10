@@ -11,14 +11,44 @@ class CImage:
     SIZE = (15,40)
     BACKGROUND = (250 + rd.randint(-5,5), 250 + rd.randint(-5,5), 250 + rd.randint(-5,5))
 
-    image = Image.new(FORMAT, SIZE, BACKGROUND)
-    draw = ImageDraw.Draw(image)
-
     def __init__(self) -> Image:
-        pass
+        self.image = Image.new(self.FORMAT, self.SIZE, self.BACKGROUND)
+        self.draw = ImageDraw.Draw(self.image)
 
     def getGradient(self):
         return rd.randint(7_000, 15_000) / 10_000
+
+    def show(self):
+        self.image.show()
+    
+    # still testing for bezier
+    def bezier(self, coords, color, gradient, width=1):
+        width = width if width>0 else 0
+
+        # coordinate points
+        cp = np.array([tup for tup in coords])
+        curve = BPoly(cp[:, None, :], [0, 1])
+
+        # FIXME change it to use the minimum needed points on the line instead of arbitrary 100 points
+        x = np.linspace(0, 1, 100)
+
+        grad = np.linspace(1, gradient, 100)
+        points = curve(x)
+
+        # plot lines
+        i = 0
+        for x, y in points:
+            pxlColorShift = int((color + rd.randint(-30,30)) * grad[i])
+            faintColorShift = int((color + rd.randint(20,50)) * grad[i])
+
+            i+=1
+            for wid in range(width):
+                # faint lines
+                self.draw.point((x-wid, y), fill=(faintColorShift, faintColorShift, faintColorShift))
+                self.draw.point((x+1, y), fill=(faintColorShift, faintColorShift, faintColorShift))
+
+                # base lines
+                self.draw.point((x-wid+1, y), fill=(pxlColorShift,pxlColorShift,pxlColorShift))
     
     def drawLine(self, coordOne, coordTwo, color, gradient=1):
         x0, y0 = coordOne
@@ -112,44 +142,17 @@ class CImage:
 
         # get points for base number two
         startPoint = (rd.randint(2,4), rd.randint(3,5))
-        middlePointOne = (self.image.size[0] + rd.randint(0,7), rd.randint(-7, 7))
+        middlePointOne = (self.image.size[0] + rd.randint(0,7), rd.randint(-7, 4))
         jointPoint = (rd.randint(2,6), self.image.size[1] - rd.randint(3,10))
         lastPoint = (jointPoint[0] + rd.randint(5,9), self.image.size[1] - rd.randint(2,10))
 
+        bezColor = rd.randint(40,140)
+        faintColor = (bezColor*gradient) + rd.randint(-30,30)
+        
+        # draw faint lines
+        self.drawLine(coordOne=(jointPoint[0], jointPoint[1]+1), coordTwo=(lastPoint[0], lastPoint[1]+1), color=faintColor+rd.randint(10,40))
+        self.drawLine(coordOne=(jointPoint[0], jointPoint[1]-1), coordTwo=(lastPoint[0], lastPoint[1]-1), color=faintColor+rd.randint(10,40))
+
         # draw lines
-        bezColor = rd.randint(40,160)
         self.bezier((startPoint, middlePointOne, jointPoint), color=bezColor, width=2, gradient=gradient)
-        self.drawLine(coordOne=jointPoint, coordTwo=lastPoint, color=bezColor+rd.randint(-30,30), gradient=gradient)
-        self.drawLine(coordOne=(jointPoint[0]-1, jointPoint[1]), coordTwo=lastPoint, color=bezColor+rd.randint(-30,30), gradient=gradient)
-    
-    def show(self):
-        self.image.show()
-    
-    # still testing for bezier
-    def bezier(self, coords, color, gradient, width=1):
-        width = width if width>0 else 0
-
-        # coordinate points
-        cp = np.array([tup for tup in coords])
-        curve = BPoly(cp[:, None, :], [0, 1])
-
-        # FIXME change it to use the minimum needed points on the line instead of arbitrary 100 points
-        x = np.linspace(0, 1, 100)
-
-        grad = np.linspace(1, gradient, 100)
-        points = curve(x)
-
-        # plot lines
-        i = 0
-        for x, y in points:
-            pxlColorShift = int((color + rd.randint(-30,30)) * grad[i])
-            faintColorShift = int((color + rd.randint(20,50)) * grad[i])
-
-            i+=1
-            for wid in range(width):
-                # faint lines
-                self.draw.point((x-wid, y), fill=(faintColorShift, faintColorShift, faintColorShift))
-                self.draw.point((x+1, y), fill=(faintColorShift, faintColorShift, faintColorShift))
-
-                # base lines
-                self.draw.point((x-wid+1, y), fill=(pxlColorShift,pxlColorShift,pxlColorShift))
+        self.drawLine(coordOne=jointPoint, coordTwo=lastPoint, color=faintColor, gradient=gradient)
