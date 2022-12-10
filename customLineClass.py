@@ -101,13 +101,13 @@ class CImage:
     def drawTwo(self):
         # get points for base number two
         # FIXME adjust the points to not allow the two to go off the image
-        startPoint = (rd.randint(1,5), rd.randint(1,3))
-        middlePointOne = (self.image.size[0] + rd.randint(5,10), rd.randint(-12, 5))
-        jointPoint = (rd.randint(2,7), self.image.size[1] - rd.randint(3,10))
-        lastPoint = (self.image.size[0] - rd.randint(1,5), self.image.size[1] - rd.randint(0,10))
+        startPoint = (rd.randint(1,4), rd.randint(3,5))
+        middlePointOne = (self.image.size[0] + rd.randint(0,7), rd.randint(-7, 7))
+        jointPoint = (rd.randint(2,6), self.image.size[1] - rd.randint(3,10))
+        lastPoint = (jointPoint[0] + rd.randint(4,8), self.image.size[1] - rd.randint(0,10))
 
         # draw lines
-        self.bezier((startPoint, middlePointOne, jointPoint), 144, 2)
+        self.bezier((startPoint, middlePointOne, jointPoint), 144, width=2)
         self.drawLine(coordOne=jointPoint, coordTwo=lastPoint, color=144)
         self.drawLine(coordOne=(jointPoint[0]-1, jointPoint[1]), coordTwo=lastPoint, color=144)
     
@@ -118,6 +118,7 @@ class CImage:
     def bezier(self, coords, color, width=1):
         width = width if width>0 else 0
 
+        # coordinate points
         cp = np.array([tup for tup in coords])
         curve = BPoly(cp[:, None, :], [0, 1])
 
@@ -132,9 +133,9 @@ class CImage:
             faintColorShift = color + rd.randint(50,90)
 
             for wid in range(width):
-                # base lines
-                self.draw.point((x-wid+1, y), fill=(pxlColorShift,pxlColorShift,pxlColorShift))
-                
                 # faint lines
                 self.draw.point((x-wid, y), fill=(faintColorShift, faintColorShift, faintColorShift))
                 self.draw.point((x+1, y), fill=(faintColorShift, faintColorShift, faintColorShift))
+
+                # base lines
+                self.draw.point((x-wid+1, y), fill=(pxlColorShift,pxlColorShift,pxlColorShift))
