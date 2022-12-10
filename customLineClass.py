@@ -16,8 +16,11 @@ class CImage:
 
     def __init__(self) -> Image:
         pass
+
+    def getGradient(self):
+        return rd.randint(7_000, 15_000) / 10_000
     
-    def drawLine(self, coordOne, coordTwo, color):
+    def drawLine(self, coordOne, coordTwo, color, gradient=1):
         x0, y0 = coordOne
         x1, y1 = coordTwo
 
@@ -32,18 +35,22 @@ class CImage:
         # Get distance between points
         dxy = math.sqrt((dx**2 + dy**2))
 
+        grad = np.linspace(1, gradient, int(dxy))
+
         # difference to be added to x and y at each interval
         dx /= dxy
         dy /= dxy
 
         # loop through line and plot points
-        for _ in range(int(dxy)):
-            pxlColorShift = color + rd.randint(-10,10)
+        for i in range(int(dxy)):
+            pxlColorShift = int((color + rd.randint(-30,30)) * grad[i])
             self.draw.point((round(x),round(y)), fill=(pxlColorShift, pxlColorShift, pxlColorShift))
             x += dx
             y += dy
 
     def drawOne(self):
+        gradient = self.getGradient()
+
         # Get the start and end points of the base of the one
         baseStartX = int(self.image.size[0]/2) + rd.randint(-2,1)
         baseStartY = rd.randint(3,10)
@@ -73,49 +80,53 @@ class CImage:
         tailEndX = baseEndX + pointX
         tailEndY =  baseEndY - pointY
 
+        baseColor = rd.randint(40,160)
+
         # draw faint base lines
-        self.drawLine(coordOne=(baseStartX+2, baseStartY), coordTwo=(baseEndX+2, baseEndY), color=rd.randint(200,240))
-        self.drawLine(coordOne=(baseStartX-1, baseStartY), coordTwo=(baseEndX-1, baseEndY), color=rd.randint(200,240))
+        self.drawLine(coordOne=(baseStartX+2, baseStartY), coordTwo=(baseEndX+2, baseEndY), color=baseColor+rd.randint(20,90))
+        self.drawLine(coordOne=(baseStartX-1, baseStartY), coordTwo=(baseEndX-1, baseEndY), color=baseColor+rd.randint(40,90))
 
         # draw faint tail lines
-        self.drawLine(coordOne=(tailStartX+2, tailStartY), coordTwo=(tailEndX+2, tailEndY), color=rd.randint(200,240))
-        self.drawLine(coordOne=(tailStartX-1, tailStartY), coordTwo=(tailEndX-1, tailEndY), color=rd.randint(200,240))
+        self.drawLine(coordOne=(tailStartX+2, tailStartY), coordTwo=(tailEndX+2, tailEndY), color=baseColor+rd.randint(40,90))
+        self.drawLine(coordOne=(tailStartX-1, tailStartY), coordTwo=(tailEndX-1, tailEndY), color=baseColor+rd.randint(40,90))
 
         # draw faint head lines
-        self.drawLine(coordOne=(headEndX-1, headEndY), coordTwo=(baseStartX-1, baseStartY), color=rd.randint(200,240))
-        self.drawLine(coordOne=(headEndX+2, headEndY), coordTwo=(baseStartX+2, baseStartY), color=rd.randint(200,240))
+        self.drawLine(coordOne=(headEndX-1, headEndY), coordTwo=(baseStartX-1, baseStartY), color=baseColor+rd.randint(40,90))
+        self.drawLine(coordOne=(headEndX+2, headEndY), coordTwo=(baseStartX+2, baseStartY), color=baseColor+rd.randint(40,90))
 
         # draw base head
-        self.drawLine(coordOne=(headEndX, headEndY), coordTwo=(baseStartX, baseStartY), color=rd.randint(120,150))
-        self.drawLine(coordOne=(headEndX+1, headEndY), coordTwo=(baseStartX+1, baseStartY), color=rd.randint(120,150))
+        self.drawLine(coordOne=(headEndX, headEndY), coordTwo=(baseStartX, baseStartY), color=baseColor+rd.randint(-30,30), gradient=gradient)
+        self.drawLine(coordOne=(headEndX+1, headEndY), coordTwo=(baseStartX+1, baseStartY), color=baseColor+rd.randint(-30,30), gradient=gradient)
 
         # draw the base tail
-        self.drawLine(coordOne=(tailStartX, tailStartY), coordTwo=(tailEndX, tailEndY), color=rd.randint(120,150))
-        self.drawLine(coordOne=(tailStartX+1, tailStartY), coordTwo=(tailEndX+1, tailEndY), color=rd.randint(120,150))
+        self.drawLine(coordOne=(tailStartX, tailStartY), coordTwo=(tailEndX, tailEndY), color=baseColor+rd.randint(-30,30), gradient=gradient)
+        self.drawLine(coordOne=(tailStartX+1, tailStartY), coordTwo=(tailEndX+1, tailEndY), color=baseColor+rd.randint(-30,30), gradient=gradient)
 
         # draw the base one line
-        self.drawLine(coordOne=(baseStartX, baseStartY), coordTwo=(baseEndX, baseEndY), color=rd.randint(120,150))
-        self.drawLine(coordOne=(baseStartX+1, baseStartY), coordTwo=(baseEndX+1, baseEndY), color=rd.randint(120,150))
+        self.drawLine(coordOne=(baseStartX, baseStartY), coordTwo=(baseEndX, baseEndY), color=baseColor+rd.randint(-30,30), gradient=gradient)
+        self.drawLine(coordOne=(baseStartX+1, baseStartY), coordTwo=(baseEndX+1, baseEndY), color=baseColor+rd.randint(-30,30), gradient=gradient)
 
     # draw the number two
     def drawTwo(self):
+        gradient = self.getGradient()
+
         # get points for base number two
-        # FIXME adjust the points to not allow the two to go off the image
-        startPoint = (rd.randint(1,4), rd.randint(3,5))
+        startPoint = (rd.randint(2,4), rd.randint(3,5))
         middlePointOne = (self.image.size[0] + rd.randint(0,7), rd.randint(-7, 7))
         jointPoint = (rd.randint(2,6), self.image.size[1] - rd.randint(3,10))
-        lastPoint = (jointPoint[0] + rd.randint(4,8), self.image.size[1] - rd.randint(0,10))
+        lastPoint = (jointPoint[0] + rd.randint(5,9), self.image.size[1] - rd.randint(2,10))
 
         # draw lines
-        self.bezier((startPoint, middlePointOne, jointPoint), 144, width=2)
-        self.drawLine(coordOne=jointPoint, coordTwo=lastPoint, color=144)
-        self.drawLine(coordOne=(jointPoint[0]-1, jointPoint[1]), coordTwo=lastPoint, color=144)
+        bezColor = rd.randint(40,160)
+        self.bezier((startPoint, middlePointOne, jointPoint), color=bezColor, width=2, gradient=gradient)
+        self.drawLine(coordOne=jointPoint, coordTwo=lastPoint, color=bezColor+rd.randint(-30,30), gradient=gradient)
+        self.drawLine(coordOne=(jointPoint[0]-1, jointPoint[1]), coordTwo=lastPoint, color=bezColor+rd.randint(-30,30), gradient=gradient)
     
     def show(self):
         self.image.show()
     
     # still testing for bezier
-    def bezier(self, coords, color, width=1):
+    def bezier(self, coords, color, gradient, width=1):
         width = width if width>0 else 0
 
         # coordinate points
@@ -125,13 +136,16 @@ class CImage:
         # FIXME change it to use the minimum needed points on the line instead of arbitrary 100 points
         x = np.linspace(0, 1, 100)
 
+        grad = np.linspace(1, gradient, 100)
         points = curve(x)
 
         # plot lines
+        i = 0
         for x, y in points:
-            pxlColorShift = color + rd.randint(-10,10)
-            faintColorShift = color + rd.randint(50,90)
+            pxlColorShift = int((color + rd.randint(-30,30)) * grad[i])
+            faintColorShift = int((color + rd.randint(20,50)) * grad[i])
 
+            i+=1
             for wid in range(width):
                 # faint lines
                 self.draw.point((x-wid, y), fill=(faintColorShift, faintColorShift, faintColorShift))
