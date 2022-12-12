@@ -8,7 +8,7 @@ import math
 class CImage: 
     # Format, size and background of file
     FORMAT = 'RGB'
-    SIZE = (15,40)
+    SIZE = (8,8)
     BACKGROUND = (250 + rd.randint(-5,5), 250 + rd.randint(-5,5), 250 + rd.randint(-5,5))
 
     def __init__(self) -> Image:
@@ -82,33 +82,35 @@ class CImage:
         gradient = self.getGradient()
 
         # Get the start and end points of the base of the one
-        baseStartX = int(self.image.size[0]/2) + rd.randint(-2,1)
-        baseStartY = rd.randint(3,10)
-        baseEndX = int(self.image.size[0]/2) + rd.randint(-2,1)
-        baseEndY = self.image.size[1] - rd.randint(4,10)
+        x = self.image.size[0]
+        y = self.image.size[1]
+        baseStartX = int(x/2) + round(x * (rd.randint(-14, 7)/100))
+        baseStartY = int((rd.randint(7,25)/100)*y)
+        baseEndX = int(x/2) + round(x * (rd.randint(-14, 7)/100))
+        baseEndY = y - int(y * (rd.randint(10,25)/100))
 
         # Get the coordinates for the little head at the top of the one
-        pointY = rd.randint(-1, 3)
-        if pointY == -1:
-            headEndX = baseStartX - rd.randint(2,4)
-        elif pointY == 3:
-            headEndX = baseStartX - rd.randint(3,5)
-        else:
-            headEndX = baseStartX - rd.randint(2,5)
-
-        headEndY = baseStartY + pointY
+        pointY = (rd.randint(-2, 8)/100)
+        # if pointY < 0:
+        #     headEndX = int(baseStartX - x*(rd.randint(13,26)/100))
+        # elif pointY < 0.03:
+        #     headEndX = int(baseStartX - x*(rd.randint(20,33)/100))
+        # else:
+        #     headEndX = int(baseStartX - x*(rd.randint(13,33)/100))
+        headEndX = int(baseStartX - x*(rd.randint(13,33)/100))
+        headEndY = int(baseStartY + y*(pointY))
 
         # Get the coordinates for the little tail at the end of the one
-        pointY = rd.randint(-3,3)
-        if pointY > 1 or pointY < -1:
-            pointX = rd.randint(3,5)
+        pointY = rd.randint(-7,7)/100
+        if pointY > 0.02 or pointY < -0.02:
+            pointX = rd.randint(20,33)/100
         else:
-            pointX = rd.randint(2,5)
-        tailStartX = baseEndX - pointX
-        tailStartY = baseEndY + pointY
+            pointX = rd.randint(13,33)/100
+        # tailStartX = baseEndX - (x * pointX)
+        # tailStartY = baseEndY + (y * pointY)
 
-        tailEndX = baseEndX + pointX
-        tailEndY =  baseEndY - pointY
+        # tailEndX = baseEndX + (x * pointX)
+        # tailEndY =  baseEndY - (y * pointY)
 
         baseColor = rd.randint(40,160)
 
@@ -116,9 +118,10 @@ class CImage:
         self.drawLine(coordOne=(baseStartX+2, baseStartY), coordTwo=(baseEndX+2, baseEndY), color=baseColor+rd.randint(20,90))
         self.drawLine(coordOne=(baseStartX-1, baseStartY), coordTwo=(baseEndX-1, baseEndY), color=baseColor+rd.randint(40,90))
 
+        # possibly temporarily removing tail from testing
         # draw faint tail lines
-        self.drawLine(coordOne=(tailStartX+2, tailStartY), coordTwo=(tailEndX+2, tailEndY), color=baseColor+rd.randint(40,90))
-        self.drawLine(coordOne=(tailStartX-1, tailStartY), coordTwo=(tailEndX-1, tailEndY), color=baseColor+rd.randint(40,90))
+        # self.drawLine(coordOne=(tailStartX+2, tailStartY), coordTwo=(tailEndX+2, tailEndY), color=baseColor+rd.randint(40,90))
+        # self.drawLine(coordOne=(tailStartX-1, tailStartY), coordTwo=(tailEndX-1, tailEndY), color=baseColor+rd.randint(40,90))
 
         # draw faint head lines
         self.drawLine(coordOne=(headEndX-1, headEndY), coordTwo=(baseStartX-1, baseStartY), color=baseColor+rd.randint(40,90))
@@ -128,9 +131,10 @@ class CImage:
         self.drawLine(coordOne=(headEndX, headEndY), coordTwo=(baseStartX, baseStartY), color=baseColor+rd.randint(-30,30), gradient=gradient)
         self.drawLine(coordOne=(headEndX+1, headEndY), coordTwo=(baseStartX+1, baseStartY), color=baseColor+rd.randint(-30,30), gradient=gradient)
 
+        # possibly temporarily removing tail from testing
         # draw the base tail
-        self.drawLine(coordOne=(tailStartX, tailStartY), coordTwo=(tailEndX, tailEndY), color=baseColor+rd.randint(-30,30), gradient=gradient)
-        self.drawLine(coordOne=(tailStartX+1, tailStartY), coordTwo=(tailEndX+1, tailEndY), color=baseColor+rd.randint(-30,30), gradient=gradient)
+        # self.drawLine(coordOne=(tailStartX, tailStartY), coordTwo=(tailEndX, tailEndY), color=baseColor+rd.randint(-30,30), gradient=gradient)
+        # self.drawLine(coordOne=(tailStartX+1, tailStartY), coordTwo=(tailEndX+1, tailEndY), color=baseColor+rd.randint(-30,30), gradient=gradient)
 
         # draw the base one line
         self.drawLine(coordOne=(baseStartX, baseStartY), coordTwo=(baseEndX, baseEndY), color=baseColor+rd.randint(-30,30), gradient=gradient)
@@ -139,12 +143,25 @@ class CImage:
     # draw the number two
     def drawTwo(self):
         gradient = self.getGradient()
+        x = self.image.size[0]
+        y = self.image.size[1]
 
         # get points for base number two
-        startPoint = (rd.randint(2,4), rd.randint(3,5))
-        middlePointOne = (self.image.size[0] + rd.randint(0,7), rd.randint(-7, 4))
-        jointPoint = (rd.randint(2,6), self.image.size[1] - rd.randint(3,10))
-        lastPoint = (jointPoint[0] + rd.randint(5,9), self.image.size[1] - rd.randint(2,10))
+        px = int(x*(rd.randint(13,26)/100))
+        py = int(y*(rd.randint(7, 13)/100))
+        startPoint = (px, py)
+
+        px = x + int(x*(rd.randint(0, 46)/100))
+        py = int(y * (rd.randint(-18, 10)/100))
+        middlePointOne = (px, py)
+
+        px = int(x*(rd.randint(13, 40)/100))
+        py = y - int(y*(rd.randint(7, 25)/100))
+        jointPoint = (px, py)
+
+        px = jointPoint[0] + round(x*(rd.randint(45, 70)/100))
+        py = y - int(y*(rd.randint(5, 25)/100))
+        lastPoint = (px, py)
 
         bezColor = rd.randint(40,140)
         faintColor = (bezColor*gradient) + rd.randint(-30,30)
@@ -154,5 +171,5 @@ class CImage:
         self.drawLine(coordOne=(jointPoint[0], jointPoint[1]-1), coordTwo=(lastPoint[0], lastPoint[1]-1), color=faintColor+rd.randint(10,40))
 
         # draw lines
-        self.bezier((startPoint, middlePointOne, jointPoint), color=bezColor, width=2, gradient=gradient)
+        self.bezier((startPoint, middlePointOne, jointPoint), color=bezColor, gradient=gradient)
         self.drawLine(coordOne=jointPoint, coordTwo=lastPoint, color=faintColor, gradient=gradient)
